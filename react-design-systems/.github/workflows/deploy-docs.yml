@@ -1,0 +1,30 @@
+name: Deploy  StoryBook
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3 # Baixa a versão mais atualizada do projeto
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3 # Baixa a versão mais atualizada do node
+        with:
+          node-version: 16
+
+      - name: Install Dependencies
+        run: npm ci # Instala as dependências do projeto
+
+      - name: Build StoryBook
+        run: npm run build-storybook # Executa o comando "build-storybook" para gerar a pasta de saida
+
+      - name: Deplo Storybook
+        run: npm run deploy-storybook -- --ci --existing-output-dir=storybook-static # Deployar a pasta gerado pelo build-storybook
+        env:
+          GH_TOKEN: ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
